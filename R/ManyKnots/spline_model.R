@@ -58,9 +58,9 @@
   lines(xgrid,fit,col='green')
 
 
-#   return(list(MICDens=MICDens,fitMat=fitMat))
-# 
-# }
+  return(list(MICDens=MICDens,fitMat=fitMat))
+
+}
 
 
 

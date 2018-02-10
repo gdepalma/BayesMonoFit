@@ -13,69 +13,16 @@ PriorLLK=function(coefs,smoothParam,sigma2){
   
   priorSmooth=dunif(smoothParam,0,2,log=T)
   
-  
-  # # 
+
   lpriorcoef = dlnorm(coefs[1],0,100,log=T)
   for(i in 2:length(coefs))
     lpriorcoef=lpriorcoef+dnorm(log(coefs[i]),log(coefs[i-1]),smoothParam,log=T)
   
-  # lpriorcoef = dlnorm(coefs[length(coefs)],1,100,log=T)
-  # for(i in (length(coefs)-1):1)
-  #   lpriorcoef=lpriorcoef+dnorm(log(coefs[i]),coefs[i+1],smoothParam,log=T)
   
   lpriorerr=log(1/dgamma(sigma2,.01,.01))
   
   return(priorSmooth+lpriorcoef+lpriorerr)
 }
-
-
-
-findInitialSpline=function(xobs,bases,knotseq,yobs,designMatrix){
-
-  min=999999
-  for(i in seq(.5,7,by=.1)){
-    coefs=seq(.1,i,length=ncol(designMatrix))
-    y_mu=coefs%*%t(designMatrix)
-    if(sum(abs(yobs-y_mu))<min){ min=sum(abs(yobs-y_mu)); save=i}
-  }
-  coef=seq(.1,save,length=ncol(designMatrix))
-  return(coef)
-}
-
-
-Ispline=function(intknots,lowept,upperept){
-  k=3
-  #determine knot sequence
-  knotseq=c(rep(lowept,k+1),intknots,rep(upperept,k+1))
-  numbases=length(knotseq)-k-2
-
-  #create matrix of bases
-  bases=matrix(NA,nrow=numbases,ncol=2)
-  for(i in 1:numbases) bases[i,]=c(knotseq[i+1],knotseq[i+k+1])
-
-  return(list(bases=bases,knotseq=knotseq))
-}
-
-
-getIsplineC=function(x_est,knotseq,bases){
-
-  numBases=nrow(bases)
-  lx_est=length(x_est)
-
-  mat=rep(0,numBases*lx_est)
-
-  storage.mode(mat) <- "double"
-  storage.mode(knotseq) <- "double"
-  storage.mode(x_est) <- "double"
-  storage.mode(numBases) <- "integer"
-  storage.mode(lx_est) <- "integer"
-  temp=.C("getIspline",x_est,lx_est,knotseq,mat,numBases)
-  designMatrix=matrix(temp[[4]],ncol=numBases,nrow=lx_est)
-  return(designMatrix)
-
-}
-
-
 
 
 updateCoefs=function(smoothParam,coefs,iter,bases,y_mu,knotseq,xobs,yobs,sigma2,coefMat){

@@ -1,38 +1,4 @@
 
-Ispline=function(intknots,lowept,upperept)
-{
-  k=3
-  #determine knot sequence
-  knotseq=c(rep(lowept,k+1),intknots,rep(upperept,k+1))
-  numbases=length(knotseq)-k-2
-  
-  #create matrix of bases
-  bases=matrix(NA,nrow=numbases,ncol=2)
-  for(i in 1:numbases) bases[i,]=c(knotseq[i+1],knotseq[i+k+1])
-  
-  return(list(bases=bases,knotseq=knotseq))
-}
-
-
-getIsplineC=function(xtrue,knotseq,bases){
-  
-  numBases=nrow(bases)
-  lxtrue=length(xtrue)
-  
-  mat=rep(0,numBases*lxtrue)
-  
-  storage.mode(mat) <- "double"
-  storage.mode(knotseq) <- "double"
-  storage.mode(xtrue) <- "double"
-  storage.mode(numBases) <- "integer"
-  storage.mode(lxtrue) <- "integer"
-  temp=.C("getIspline",xtrue,lxtrue,knotseq,mat,numBases)
-  designMatrix=matrix(temp[[4]],ncol=numBases,nrow=lxtrue)
-  return(designMatrix)
-  
-}
-
-
 
 genData=function(type,nobs=200,sigma2=2){
   
@@ -42,7 +8,9 @@ genData=function(type,nobs=200,sigma2=2){
 #   popmn=c(-4,0,4); popstd=c(.7,.7,.7); popprob=c(1/3,1/3,1/3)
 #   popmn=c(-6,-3,3); popstd=c(1.5,1.5,.7); popprob=c(.6,.3,.1)
 #   popmn=c(-3,0,3); popstd=c(1,1,1); popprob=c(.5,.3,.2)
-  xobs=rnormmix(n=nobs,lambda=popprob,mu=popmn,sigma=popstd)
+  
+  components <- sample(1:3,prob=popprob,size=nobs,replace=TRUE)
+  xobs <- rnorm(n=nobs,mean=popmn[components],sd=popstd[components])
   xtrue=xobs
   
   ### X
@@ -104,7 +72,6 @@ genData=function(type,nobs=200,sigma2=2){
   return(list(xobs=xobs,yobs=as.numeric(yobs),true=true,xtrue=xtrue,xgrid=xgrid))
 }
 
-library(mixtools)
 library(tidyverse)
 parms=genData(3)
 xobs=parms$xobs; yobs=parms$yobs; xgrid=parms$xgrid

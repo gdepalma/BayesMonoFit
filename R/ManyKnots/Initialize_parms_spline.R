@@ -1,4 +1,17 @@
-# initialize_parms_spline=function(xobs,yobs,xgrid){
+findInitialSpline=function(xobs,bases,knotseq,yobs,designMatrix){
+  
+  min=999999
+  for(i in seq(.5,7,by=.1)){
+    coefs=seq(.1,i,length=ncol(designMatrix))
+    y_mu=coefs%*%t(designMatrix)
+    if(sum(abs(yobs-y_mu))<min){ min=sum(abs(yobs-y_mu)); save=i}
+  }
+  coef=seq(.1,save,length=ncol(designMatrix))
+  return(coef)
+}
+
+
+initialize_parms_spline=function(xobs,yobs,xgrid){
 
 
   ### Initalize Isplines
@@ -18,6 +31,6 @@
 
 
 
-#   return(list(coefs=coefs,xtrue=xtrue,bases=bases,knotseq=knotseq,ytrue=ytrue,
-#               lowept=lowept,upperept=upperept,designMatrixGrid=designMatrixGrid))
-# }
+  return(list(coefs=coefs,bases=bases,knotseq=knotseq,y_mu=y_mu,
+              lowept=lowept,upperept=upperept,designMatrixGrid=designMatrixGrid))
+}
