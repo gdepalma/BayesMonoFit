@@ -9,8 +9,9 @@ genData=function(type,nobs=200,sigma2=2){
 #   popmn=c(-6,-3,3); popstd=c(1.5,1.5,.7); popprob=c(.6,.3,.1)
 #   popmn=c(-3,0,3); popstd=c(1,1,1); popprob=c(.5,.3,.2)
   
-  components <- sample(1:3,prob=popprob,size=nobs,replace=TRUE)
-  xobs <- rnorm(n=nobs,mean=popmn[components],sd=popstd[components])
+  # components <- sample(1:3,prob=popprob,size=nobs,replace=TRUE)
+  # xobs <- rnorm(n=nobs,mean=popmn[components],sd=popstd[components])
+  xobs=runif(nobs,0,20)
   xtrue=xobs
   
   ### X
@@ -34,7 +35,7 @@ genData=function(type,nobs=200,sigma2=2){
   #3
   if(type==3){
     icoefsT=c(1,1,20,1,20,1)
-    parms=Ispline(c(-3,0,1),-6,6)
+    parms=Ispline(c(-3,0,10),-6,15)
     basesT=parms$bases;
     knotseqT=parms$knotseq
     designMatrix=getIsplineC(xtrue,knotseqT,basesT)
@@ -72,7 +73,3 @@ genData=function(type,nobs=200,sigma2=2){
   return(list(xobs=xobs,yobs=as.numeric(yobs),true=true,xtrue=xtrue,xgrid=xgrid))
 }
 
-library(tidyverse)
-parms=genData(3)
-xobs=parms$xobs; yobs=parms$yobs; xgrid=parms$xgrid
-sigma2=2

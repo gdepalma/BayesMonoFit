@@ -1,4 +1,4 @@
-findInitialSpline=function(xobs,bases,knotseq,yobs,designMatrix){
+findInitialSplineManyKnots=function(xobs,bases,knotseq,yobs,designMatrix){
   
   min=999999
   for(i in seq(.5,7,by=.1)){
@@ -11,20 +11,20 @@ findInitialSpline=function(xobs,bases,knotseq,yobs,designMatrix){
 }
 
 
-initialize_parms_spline=function(xobs,yobs,xgrid){
+initializeSplineManyKnots=function(xobs,yobs,xgrid,dist_knots=1){
 
 
   ### Initalize Isplines
   lowept=min(xobs)-.5
   upperept=max(xobs)+.5
-  dist=1
-  parms=Ispline(seq(min(xobs),max(xobs),by=dist),lowept,upperept)
+  dist_knots=3
+  parms=Ispline(seq(min(xobs),max(xobs),by=dist_knots),lowept,upperept)
   bases=parms$bases;
   knotseq=parms$knotseq
 
   #### Initial spline coefficients
   designMatrix=getIsplineC(xobs,knotseq,bases)
-  coefs=findInitialSpline(xobs,bases,knotseq,yobs,designMatrix)
+  coefs=findInitialSplineManyKnots(xobs,bases,knotseq,yobs,designMatrix)
   y_mu=coefs%*%t(designMatrix)
 
   designMatrixGrid=getIsplineC(xgrid,knotseq,bases)
