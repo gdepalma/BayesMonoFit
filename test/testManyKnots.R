@@ -1,12 +1,14 @@
 
 library(tidyverse)
 library(mvtnorm)
+library(ggthemes)
 parms=genData(3)
 xobs=parms$xobs; yobs=parms$yobs; xgrid=parms$xgrid
 
-parms=initializeSplineManyKnots(xobs,yobs,xgrid,dist_knots=1)
-coefs=parms$coefs; bases=parms$bases; knotseq=parms$knotseq; y_mu=parms$y_mu
-lowept=parms$lowept; upperept=parms$upperept; designMatrixGrid=parms$designMatrixGrid
+initializeValues=initializeManyKnots(xobs,yobs,xgrid,dist_knots=2)
+fit=runManyKnots(initializeValues)
+plot(fit)
+trace(fit)
 
 
 
@@ -20,3 +22,4 @@ ggplot(a1,aes(x=iter,y=val))+geom_line()+facet_wrap(~key)
 fit=apply(fitMat,2,median)
 plot(xobs,yobs,pch=16)
 lines(xgrid,fit,col='green')
+

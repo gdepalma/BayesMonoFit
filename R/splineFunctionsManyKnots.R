@@ -59,7 +59,7 @@ updateCoefs=function(smoothParam,coefs,iter,bases,y_mu,knotseq,xobs,yobs,sigma2,
 
 }
 
-updateSmoothParm=function(smoothParam,coefs){
+updateSmoothParm=function(smoothParam,coefs,sigma2){
 
   accept=0
   propSmooth=rnorm(1,smoothParam,.2)

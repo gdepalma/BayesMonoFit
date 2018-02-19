@@ -1,7 +1,12 @@
-fitSplineMany=function(xobs,yobs,coefs,x_est,y_mu,xgrid,lowept,upperept,knotseq,bases,designMatrixGrid,
-                                    xsig=1,numIter=22000,burnin=14000,thin=4){
 
+runManyKnots=function(initializeValues,numIter=9000,burnin=5000,thin=4){
 
+  if(class(initializeValues)!="initialManyKnots") stop("Wrong input data type")
+  coefs=initializeValues$coefs; bases=initializeValues$bases; knotseq=initializeValues$knotseq
+  y_mu=initializeValues$y_mu; xgrid=initializeValues$xgrid; designMatrix=initializeValues$designMatrix
+  designMatrixGrid=initializeValues$designMatrixGrid; xobs=initializeValues$xobs; yobs=initializeValues$yobs
+  
+  
   fitMat=matrix(nrow=numIter-burnin,ncol=length(xgrid))
   coefMat=matrix(nrow=numIter,ncol=length(coefs))
   sigma2_save=rep(NA,numIter)
@@ -12,6 +17,7 @@ fitSplineMany=function(xobs,yobs,coefs,x_est,y_mu,xgrid,lowept,upperept,knotseq,
   nobs=length(xobs)
 
   smoothParam=2
+  sigma2=5
   
   begin=Sys.time()
 
@@ -29,7 +35,7 @@ fitSplineMany=function(xobs,yobs,coefs,x_est,y_mu,xgrid,lowept,upperept,knotseq,
 
 
     ### Update smoothness parameter
-    parms=updateSmoothParm(smoothParam,coefs)
+    parms=updateSmoothParm(smoothParam,coefs,sigma2)
     smoothParam=parms$smooth
     
     ### Update error variance
@@ -44,8 +50,12 @@ fitSplineMany=function(xobs,yobs,coefs,x_est,y_mu,xgrid,lowept,upperept,knotseq,
     }
 
   }
-
-  return(list(MICDens=MICDens,fitMat=fitMat))
+  
+  resultData=list(fitMat=fitMat,coefMat=coefMat,sigma2_save=sigma2_save,smoothParam_save=smoothParam_save,
+                        xobs=xobs,yobs=yobs,xgrid=xgrid)
+  class(resultData)="manyKnotsResults"
+  
+  return(resultData)
 
 }
 
