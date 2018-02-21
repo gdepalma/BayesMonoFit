@@ -1,6 +1,5 @@
 
-Ispline=function(intknots,lowept,upperept)
-{
+Ispline=function(intknots,lowept,upperept){
   k=3
   #determine knot sequence
   knotseq=c(rep(lowept,k+1),intknots,rep(upperept,k+1))

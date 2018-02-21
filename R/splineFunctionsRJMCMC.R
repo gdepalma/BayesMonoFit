@@ -1,0 +1,75 @@
+
+
+getLLKRJMCMC=function(yobs,y_mu,sigma2){
+  
+  yllk <- dnorm(yobs,y_mu,sqrt(sigma2),log=TRUE)
+  
+  llike <- yllk
+  
+  return(llike)
+}
+
+PriorLLKRJMCMC=function(coefs,sigma2){
+  
+  lpriorcoef=0
+  lpriorerr=log(1/dgamma(sigma2,.01,.01))
+  
+  return(lpriorcoef+lpriorerr)
+}
+
+
+updateCoefsRJMCMC=function(smoothParam,coefs,iter,bases,y_mu,knotseq,xobs,yobs,sigma2,coefMat){
+
+  if(iter<1000){
+    Sigma=diag(.001,nrow=ncol(coefMat),ncol=ncol(coefMat))
+  }else{
+    Sigma=cov(coefMat[(iter-900):(iter-1),])
+  }
+
+  propCoef=tryCatch(as.numeric(exp(rmvnorm(n=1,as.numeric(log(coefs)),sigma=Sigma))),
+          error=function(e){as.numeric(exp(rmvnorm(n=1,as.numeric(log(coefs)),
+          sigma=diag(.001,nrow=nrow(bases),ncol=nrow(bases)))))})
+
+  accept=0
+  designMatrix=getIsplineC(xobs,knotseq,bases)
+  newY=as.numeric(propCoef%*%t(designMatrix))
+
+  #log likelihood and priors
+  oldLLK=sum(getLLK(yobs,y_mu,sigma2))
+  oldPRIORLLK=sum(PriorLLK(coefs,smoothParam,sigma2))
+  newLLK=sum(getLLK(yobs,newY,sigma2))
+  newPRIORLLK=sum(PriorLLK(propCoef,smoothParam,sigma2))
+
+  #accept/reject
+  A=newLLK+newPRIORLLK-oldLLK-oldPRIORLLK
+  if(is.nan(A)==FALSE & log(runif(1)) < A){
+    y_mu=newY
+    coefs=propCoef
+    accept=1
+  }
+
+  return(list(acceptCoef=accept,coefs=coefs,y_mu=y_mu))
+
+}
+
+
+updateVarianceRJMCMC=function(yobs,y_mu,sigma2,coefs){
+  
+  accept=0
+  propSigma2=rnorm(1,sigma2,.1)
+  if(propSigma2<0)
+    return(sigma2)
+  #log likelihood and priors
+  oldLLK=sum(getLLKRJMCMC(yobs,y_mu,sigma2))
+  oldPRIORLLK=sum(PriorLLKRJMCMC(coefs,sigma2))
+  newLLK=sum(getLLKRJMCMC(yobs,y_mu,propSigma2))
+  newPRIORLLK=sum(PriorLLKRJMCMC(coefs,propSigma2))
+                  
+  #accept/reject
+  A=newLLK+newPRIORLLK-oldLLK-oldPRIORLLK
+  if(is.nan(A)==FALSE & log(runif(1)) < A){
+    sigma2=propSigma2
+  }
+  
+  return(sigma2)
+}
