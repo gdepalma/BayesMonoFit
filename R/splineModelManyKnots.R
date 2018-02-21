@@ -52,7 +52,7 @@ runManyKnots=function(initializeValues,numIter=9000,burnin=5000,thin=4){
   }
   
   resultData=list(fitMat=fitMat,coefMat=coefMat,sigma2_save=sigma2_save,smoothParam_save=smoothParam_save,
-                        xobs=xobs,yobs=yobs,xgrid=xgrid)
+                        xobs=xobs,yobs=yobs,xgrid=xgrid,burnin=burnin)
   class(resultData)="manyKnotsResults"
   
   return(resultData)

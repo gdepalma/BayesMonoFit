@@ -1,7 +1,4 @@
 
-library(tidyverse)
-library(mvtnorm)
-library(ggthemes)
 parms=genData(3)
 xobs=parms$xobs; yobs=parms$yobs; xgrid=parms$xgrid
 
