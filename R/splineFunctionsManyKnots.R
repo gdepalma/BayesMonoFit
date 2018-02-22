@@ -4,7 +4,7 @@ getLLKManyKnots=function(yobs,y_mu,sigma2){
   
   yllk <- dnorm(yobs,y_mu,sqrt(sigma2),log=TRUE)
   
-  llike <- yllk
+  llike <- sum(yllk)
   
   return(llike)
 }
@@ -42,10 +42,10 @@ updateCoefsManyKnots=function(smoothParam,coefs,iter,bases,y_mu,knotseq,xobs,yob
   newY=as.numeric(propCoef%*%t(designMatrix))
 
   #log likelihood and priors
-  oldLLK=sum(getLLKManyKnots(yobs,y_mu,sigma2))
-  oldPriorLLKManyKnots=sum(PriorLLKManyKnots(coefs,smoothParam,sigma2))
-  newLLK=sum(getLLKManyKnots(yobs,newY,sigma2))
-  newPriorLLKManyKnots=sum(PriorLLKManyKnots(propCoef,smoothParam,sigma2))
+  oldLLK=getLLKManyKnots(yobs,y_mu,sigma2)
+  oldPriorLLKManyKnots=PriorLLKManyKnots(coefs,smoothParam,sigma2)
+  newLLK=getLLKManyKnots(yobs,newY,sigma2)
+  newPriorLLKManyKnots=PriorLLKManyKnots(propCoef,smoothParam,sigma2)
 
   #accept/reject
   A=newLLK+newPriorLLKManyKnots-oldLLK-oldPriorLLKManyKnots
@@ -65,8 +65,8 @@ updateSmoothParmManyKnots=function(smoothParam,coefs,sigma2){
   propSmooth=rnorm(1,smoothParam,.2)
   if(propSmooth<0 | propSmooth>2)
     return(list(smooth=smoothParam,accept=accept))
-  oldPriorLLKManyKnots=sum(PriorLLKManyKnots(coefs,smoothParam,sigma2))
-  newPriorLLKManyKnots=sum(PriorLLKManyKnots(coefs,propSmooth,sigma2))
+  oldPriorLLKManyKnots=PriorLLKManyKnots(coefs,smoothParam,sigma2)
+  newPriorLLKManyKnots=PriorLLKManyKnots(coefs,propSmooth,sigma2)
   #accept/reject
   if(log(runif(1)) < newPriorLLKManyKnots-oldPriorLLKManyKnots){
     smoothParam=propSmooth
@@ -83,10 +83,10 @@ updateVarianceManyKnots=function(yobs,y_mu,sigma2,smoothParam,coefs){
   if(propSigma2<0)
     return(sigma2)
   #log likelihood and priors
-  oldLLK=sum(getLLKManyKnots(yobs,y_mu,sigma2))
-  oldPriorLLKManyKnots=sum(PriorLLKManyKnots(coefs,smoothParam,sigma2))
-  newLLK=sum(getLLKManyKnots(yobs,y_mu,propSigma2))
-  newPriorLLKManyKnots=sum(PriorLLKManyKnots(coefs,smoothParam,propSigma2))
+  oldLLK=getLLKManyKnots(yobs,y_mu,sigma2)
+  oldPriorLLKManyKnots=PriorLLKManyKnots(coefs,smoothParam,sigma2)
+  newLLK=getLLKManyKnots(yobs,y_mu,propSigma2)
+  newPriorLLKManyKnots=PriorLLKManyKnots(coefs,smoothParam,propSigma2)
                   
   #accept/reject
   A=newLLK+newPriorLLKManyKnots-oldLLK-oldPriorLLKManyKnots

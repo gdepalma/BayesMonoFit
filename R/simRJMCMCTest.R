@@ -93,15 +93,15 @@
 #     xtrue1=parms$xtrue1; ytrue1=as.numeric(parms$ytrue1)
 #   }
 # #   
-#   #get covariance
-#   designMatrix=getIsplineC(xtrue1,knotseq,bases)
-#   fit=lm(yobs~designMatrix-1)
-#   Sigma=vcov(fit)
-# 
-#   #### joint adaptive update
-#   propCoef=as.numeric(rmvnorm(n=1,as.numeric(icoefs1),sigma=Sigma))
-#   designMatrix=getIsplineC(xtrue1,knotseq,bases)
-#   newY=as.numeric(propCoef%*%t(designMatrix))
+  # #get covariance
+  # designMatrix=getIsplineC(xtrue1,knotseq,bases)
+  # fit=lm(yobs~designMatrix-1)
+  # Sigma=vcov(fit)
+  # 
+  # #### joint adaptive update
+  # propCoef=as.numeric(rmvnorm(n=1,as.numeric(icoefs1),sigma=Sigma))
+  # designMatrix=getIsplineC(xtrue1,knotseq,bases)
+  # newY=as.numeric(propCoef%*%t(designMatrix))
 #   
 #   #test mono
 #   designMatrix=getIsplineC(xgrid,knotseq,bases)

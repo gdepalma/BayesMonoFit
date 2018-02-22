@@ -38,7 +38,6 @@ runManyKnots=function(initializeValues,numIter=9000,burnin=5000,thin=4){
     ### Update error variance
     sigma2=updateVarianceManyKnots(yobs,y_mu,sigma2,smoothParam,coefs)
 
-    # smoothParam_sav[iter]=smoothParam
     coefMat[iter,]=log(coefs)
     sigma2_save[iter]=sigma2
     smoothParam_save[iter]=smoothParam

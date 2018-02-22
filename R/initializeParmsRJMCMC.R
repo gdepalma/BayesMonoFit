@@ -18,12 +18,11 @@ initializeRJMCMC=function(xobs,yobs,xgrid){
   ### Loop over to find initial knotsequence and coefs that lead to monotonicity
   repeat{
     
+    # test monotonicity
     tempY=y_mu 
     DT=data.table(xobs,tempY)
     DT=DT[order(xobs)]
     test_mono_y=DT[,2]
-    
-    # test monotonicity
     if(all(test_mono_y == cummin(test_mono_y))==TRUE) break
     
     #select new interior knot locations and new coefs

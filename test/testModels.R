@@ -1,4 +1,5 @@
 
+source('test/GenData.R')
 parms=genData(3)
 xobs=parms$xobs; yobs=parms$yobs; xgrid=parms$xgrid
 

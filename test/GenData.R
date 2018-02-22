@@ -68,8 +68,14 @@ genData=function(type,nobs=200,sigma2=2){
            exp(coef[4]*(coef[2]-xgrid)))
   }
   
-  yobs=ytrue+rnorm(nobs,0,sigma2)
+  yobs=as.numeric(ytrue+rnorm(nobs,0,sigma2))
   
-  return(list(xobs=xobs,yobs=as.numeric(yobs),true=true,xtrue=xtrue,xgrid=xgrid))
+  a1=data.frame(xobs,yobs)
+
+  plt=ggplot(a1,aes(x=xobs,y=yobs))+geom_point()+
+    theme_fivethirtyeight(base_size=15)
+  plot(plt)
+  
+  return(list(xobs=xobs,yobs=yobs,true=true,xtrue=xtrue,xgrid=xgrid))
 }
 
